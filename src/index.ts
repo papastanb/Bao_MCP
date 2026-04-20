@@ -144,7 +144,7 @@ export const OpenBaoMcpGuardPlugin: Plugin = async () => {
           '[Secure MCP reminder] For MCPs that need an API key, do not hardcode secrets in opencode.json.',
           'Store the key in OpenBao first:',
           'bao kv put -address=http://127.0.0.1:8200 -tls-skip-verify -mount=secret <mcp>/api_key key=TA_CLE_API',
-          'Then wire the MCP through /home/stan/.local/bin/openbao-mcp-exec.',
+          `Then wire the MCP through ${OPENBAO_EXECUTABLE} (or your preferred absolute path).`,
           'Use /add-secure-mcp for the guided secure setup flow.',
         ].join(' '),
       } as unknown as Part);
@@ -165,7 +165,7 @@ export const OpenBaoMcpGuardPlugin: Plugin = async () => {
           'Do not hardcode MCP secrets in opencode config.',
           'Store the secret in OpenBao instead:',
           'bao kv put -address=http://127.0.0.1:8200 -tls-skip-verify -mount=secret <mcp>/api_key key=TA_CLE_API',
-          'Then configure the MCP through /home/stan/.local/bin/openbao-mcp-exec.',
+          `Then configure the MCP through ${OPENBAO_EXECUTABLE} (or your preferred absolute path).`,
         ].join(' ')
       );
     },
@@ -176,3 +176,4 @@ export default {
   id: 'openbao-mcp-guard',
   server: OpenBaoMcpGuardPlugin,
 };
+const OPENBAO_EXECUTABLE = 'openbao-mcp-exec';

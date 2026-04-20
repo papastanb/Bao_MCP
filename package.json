@@ -1,10 +1,27 @@
 {
   "name": "opencode-openbao-mcp-guard",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "OpenCode plugin that enforces secure MCP API key handling through OpenBao.",
+  "license": "MIT",
+  "keywords": [
+    "opencode",
+    "plugin",
+    "openbao",
+    "mcp",
+    "security",
+    "secrets"
+  ],
   "author": {
     "name": "Stan",
     "email": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/papastanb/Bao_MCP.git"
+  },
+  "homepage": "https://github.com/papastanb/Bao_MCP#readme",
+  "bugs": {
+    "url": "https://github.com/papastanb/Bao_MCP/issues"
   },
   "type": "module",
   "exports": {

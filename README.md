@@ -2,23 +2,29 @@
 
 OpenCode plugin that standardizes secure MCP installation when an MCP needs an API key or token.
 
-This package does not require a separate local instruction file in `opencode.json`; the guidance is embedded in the plugin behavior and command flow.
+This package is self-contained from the OpenCode side: it does not require a separate local instruction file in `opencode.json`. Guidance is embedded in the plugin behavior, the TUI surface, and the `/add-secure-mcp` command.
 
-## Features
+## Version
 
-- Blocks obvious hardcoded secrets in `opencode.json` and `opencode.jsonc`
-- Injects a secure MCP reminder into relevant chats
-- Registers a global `/add-secure-mcp` command
-- Exposes a TUI module with the same plugin ID for clean OpenCode plugin integration
-- Embeds the OpenBao-first workflow directly in the plugin behavior
+- Current package version: `0.2.0`
+- npm: `https://www.npmjs.com/package/opencode-openbao-mcp-guard`
+- GitHub: `https://github.com/papastanb/Bao_MCP`
+
+## What it does
+
+- blocks obvious hardcoded secrets in `opencode.json` and `opencode.jsonc`
+- injects a secure MCP reminder into relevant chats
+- registers a guided `/add-secure-mcp` command
+- exposes a TUI module for OpenCode plugin integration
+- keeps the OpenBao-first workflow embedded in the plugin behavior
 
 ## Security model
 
 For MCPs that need an API key:
 
-1. Store the key in OpenBao first
-2. Configure the MCP to fetch the key at runtime through `openbao-mcp-exec`
-3. Never write the key directly into `opencode.json`
+1. store the key in OpenBao first
+2. configure the MCP to fetch the key at runtime through `openbao-mcp-exec`
+3. never write the key directly into `opencode.json`
 
 OpenBao storage example:
 
@@ -32,7 +38,7 @@ OpenCode MCP example:
 "context7": {
   "type": "local",
   "command": [
-    "/home/stan/.local/bin/openbao-mcp-exec",
+    "openbao-mcp-exec",
     "secret",
     "context7/api_key",
     "key",
@@ -45,46 +51,95 @@ OpenCode MCP example:
 }
 ```
 
-## Install
+If `openbao-mcp-exec` is not on `PATH`, replace it with an absolute path in your local config.
 
-### Local development
+## Install in OpenCode
 
-```bash
-cd "/mnt/d/Claude SB/Bao_MCP"
-bun install
-bun run build
-```
-
-Then add the built plugin to OpenCode:
+Add the plugin to your global OpenCode config:
 
 ```json
 {
   "plugin": [
-    "file:///mnt/d/Claude SB/Bao_MCP/dist/index.js"
+    "opencode-openbao-mcp-guard"
   ]
 }
 ```
 
-The package also exposes a TUI entrypoint at `./tui` for OpenCode's TUI plugin surface.
+OpenCode will install the package automatically.
 
-Or during development, you can point directly to source:
+## TUI integration
 
-```json
-{
-  "plugin": [
-    "file:///mnt/d/Claude SB/Bao_MCP/src/index.ts"
-  ]
-}
-```
+This package ships both:
 
-## Commands
+- a server plugin entrypoint
+- a TUI plugin entrypoint (`./tui`)
+
+The TUI module registers a visible command launcher and shows a first-load toast so the plugin is discoverable in the TUI plugin list and command picker.
+
+## Slash command
 
 - `/add-secure-mcp`: guided secure MCP installation flow
+
+The command tells the model to:
+
+- avoid hardcoded secrets
+- ask for the MCP package/launcher details
+- remind the user to store the key in OpenBao first
+- generate the correct `command` array using `openbao-mcp-exec`
+
+## OpenBao setup
+
+Minimal pattern:
+
+```bash
+bao kv put -address=http://127.0.0.1:8200 -tls-skip-verify -mount=secret <mcp>/api_key key=TA_CLE_API
+```
+
+More details:
+
+- [`docs/OPENBAO_SETUP.md`](./docs/OPENBAO_SETUP.md)
+
+## Setup for LLMs
+
+If an LLM or coding agent is using this plugin, it should follow these rules:
+
+1. never hardcode API keys in `opencode.json`
+2. always ask the user to store the secret in OpenBao first
+3. prefer `openbao-mcp-exec` on `PATH`
+4. if the helper is not on `PATH`, request or use an explicit absolute path locally
+
+Dedicated guide:
+
+- [`docs/LLM_SETUP.md`](./docs/LLM_SETUP.md)
 
 ## Development
 
 ```bash
-bun run build
+bun install
 bun run check
 bun run lint
+bun run build
 ```
+
+## Local development install
+
+```json
+{
+  "plugin": [
+    "file:///absolute/path/to/Bao_MCP"
+  ]
+}
+```
+
+During development, loading the package root is preferred over pointing to a single built file because it keeps the server and TUI plugin surfaces together.
+
+## Release process
+
+See:
+
+- [`CHANGELOG.md`](./CHANGELOG.md)
+- [`RELEASE.md`](./RELEASE.md)
+
+## License
+
+MIT

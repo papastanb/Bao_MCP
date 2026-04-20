@@ -7,7 +7,7 @@ Help me add an MCP server securely in OpenCode.
 Requirements:
 - Never hardcode API keys or tokens in `opencode.json`
 - Use OpenBao as the source of truth for secrets
-- Use `/home/stan/.local/bin/openbao-mcp-exec` in the MCP `command` array when the MCP needs a secret passed as a CLI argument
+- Use `openbao-mcp-exec` in the MCP `command` array when the MCP needs a secret passed as a CLI argument. If it is not on `PATH`, use an absolute path instead.
 - Remind me to store the secret first with a command in this form:
 
 ```bash
