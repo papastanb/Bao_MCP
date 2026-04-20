@@ -1,0 +1,55 @@
+{
+  "name": "opencode-openbao-mcp-guard",
+  "version": "0.1.0",
+  "description": "OpenCode plugin that enforces secure MCP API key handling through OpenBao.",
+  "author": {
+    "name": "Stan",
+    "email": ""
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./dist/index.js"
+    },
+    "./tui": {
+      "default": "./dist/tui.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src/commands"
+  ],
+  "scripts": {
+    "build": "bun build ./src/index.ts --outfile ./dist/index.js --target bun && bun build ./src/tui.ts --outfile ./dist/tui.js --target bun",
+    "check": "bunx tsc --noEmit",
+    "lint": "bunx eslint .",
+    "format": "bunx prettier --write ."
+  },
+  "dependencies": {
+    "@opencode-ai/plugin": "^1.14.19"
+  },
+  "peerDependencies": {
+    "@opentui/core": ">=0.1.101",
+    "@opentui/solid": ">=0.1.101"
+  },
+  "peerDependenciesMeta": {
+    "@opentui/core": {
+      "optional": true
+    },
+    "@opentui/solid": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@opentui/core": "^0.1.101",
+    "@opentui/solid": "^0.1.101",
+    "bun-types": "latest",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.4"
+  }
+}
