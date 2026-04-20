@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0
+
+- fix HARDCODED_SECRET_RE bypass by scanning raw string values instead of JSON.stringify'd args
+- fix Bun.file().exists() for directory checks by using node:fs/promises stat
+- move OPENBAO_EXECUTABLE constant to top of file near other constants
+- fix TUI command trigger by removing leading slash from 'add-secure-mcp'
+- add recursive hasSecretInValue() to detect secrets in nested objects and arrays
+- rewrite all commits with correct author identity (papastanb)
+
 ## 0.2.0
 
 - replace hardcoded personal `openbao-mcp-exec` paths with path-agnostic guidance
