@@ -23,6 +23,19 @@ const HARDCODED_SECRET_RE =
   /(?:ctx7sk-[A-Za-z0-9-]+|ghp_[A-Za-z0-9]+|xox[baprs]-[A-Za-z0-9-]+|AIza[0-9A-Za-z\-_]{20,}|AKIA[0-9A-Z]{16}|(?:api[_-]?key|token|secret)\s*[=:]\s*["'][^"'{][^"']*["'])/i;
 const OPENBAO_EXECUTABLE = 'openbao-mcp-exec';
 
+function hasSecretInValue(value: unknown): boolean {
+  if (typeof value === 'string') {
+    return HARDCODED_SECRET_RE.test(value);
+  }
+  if (Array.isArray(value)) {
+    return value.some(hasSecretInValue);
+  }
+  if (value !== null && typeof value === 'object') {
+    return Object.values(value).some(hasSecretInValue);
+  }
+  return false;
+}
+
 function parseFrontmatter(content: string): {
   frontmatter: CommandFrontmatter;
   body: string;
@@ -164,10 +177,7 @@ export const OpenBaoMcpGuardPlugin: Plugin = async () => {
 
       if (!targetsOpencodeConfig(output.args)) return;
 
-      const rawValues = Object.values(output.args).filter(
-        (v): v is string => typeof v === 'string'
-      );
-      const hasSecret = rawValues.some((v) => HARDCODED_SECRET_RE.test(v));
+      const hasSecret = hasSecretInValue(output.args);
       if (!hasSecret) return;
 
       throw new Error(
