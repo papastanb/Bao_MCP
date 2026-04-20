@@ -2,13 +2,15 @@
 
 OpenCode plugin that standardizes secure MCP installation when an MCP needs an API key or token.
 
+This package does not require a separate local instruction file in `opencode.json`; the guidance is embedded in the plugin behavior and command flow.
+
 ## Features
 
 - Blocks obvious hardcoded secrets in `opencode.json` and `opencode.jsonc`
 - Injects a secure MCP reminder into relevant chats
 - Registers a global `/add-secure-mcp` command
 - Exposes a TUI module with the same plugin ID for clean OpenCode plugin integration
-- Documents the OpenBao-first workflow for MCP secrets
+- Embeds the OpenBao-first workflow directly in the plugin behavior
 
 ## Security model
 
