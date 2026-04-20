@@ -1,6 +1,7 @@
 import type { Config, Plugin } from '@opencode-ai/plugin';
 import type { Part } from '@opencode-ai/sdk';
 import path from 'node:path';
+import fs from 'node:fs/promises';
 
 type CommandFrontmatter = {
   description?: string;
@@ -20,6 +21,7 @@ const MCP_PROMPT_RE =
   /\b(mcp|model context protocol|context7|chrome-devtools|api key|token|secret)\b/i;
 const HARDCODED_SECRET_RE =
   /(?:ctx7sk-[A-Za-z0-9-]+|ghp_[A-Za-z0-9]+|xox[baprs]-[A-Za-z0-9-]+|AIza[0-9A-Za-z\-_]{20,}|AKIA[0-9A-Z]{16}|(?:api[_-]?key|token|secret)\s*[=:]\s*["'][^"'{][^"']*["'])/i;
+const OPENBAO_EXECUTABLE = 'openbao-mcp-exec';
 
 function parseFrontmatter(content: string): {
   frontmatter: CommandFrontmatter;
@@ -58,8 +60,13 @@ async function resolveCommandDirectory(): Promise<string | null> {
   ];
 
   for (const candidate of candidateDirs) {
-    if (await Bun.file(candidate).exists()) {
-      return candidate;
+    try {
+      const stat = await fs.stat(candidate);
+      if (stat.isDirectory()) {
+        return candidate;
+      }
+    } catch {
+      // directory does not exist
     }
   }
 
@@ -157,8 +164,11 @@ export const OpenBaoMcpGuardPlugin: Plugin = async () => {
 
       if (!targetsOpencodeConfig(output.args)) return;
 
-      const payload = getWritablePayload(output.args);
-      if (!HARDCODED_SECRET_RE.test(payload)) return;
+      const rawValues = Object.values(output.args).filter(
+        (v): v is string => typeof v === 'string'
+      );
+      const hasSecret = rawValues.some((v) => HARDCODED_SECRET_RE.test(v));
+      if (!hasSecret) return;
 
       throw new Error(
         [
@@ -176,4 +186,3 @@ export default {
   id: 'openbao-mcp-guard',
   server: OpenBaoMcpGuardPlugin,
 };
-const OPENBAO_EXECUTABLE = 'openbao-mcp-exec';

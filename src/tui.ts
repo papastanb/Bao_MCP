@@ -8,7 +8,7 @@ export const tui: TuiPlugin = async (api, _options, meta) => {
       description: 'Run the guided /add-secure-mcp workflow',
       category: 'Plugins',
       onSelect: () => {
-        api.command.trigger('/add-secure-mcp');
+        api.command.trigger('add-secure-mcp');
       },
     },
   ]);
